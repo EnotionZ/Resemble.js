@@ -33,7 +33,7 @@ URL: https://github.com/Huddle/Resemble.js
 			}
 		}
 	};
-	
+
 	var errorPixelTransformer = errorPixelTransform.flat;
 
 	_this['resemble'] = function( fileData ){
@@ -372,16 +372,16 @@ URL: https://github.com/Huddle/Resemble.js
 					addBrightnessInfo(pixel2);
 
 					if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-						copyGrayScalePixel(targetPix, offset, pixel2);
+						errorPixel(targetPix, offset, pixel2);
 					} else {
-						errorPixel(targetPix, offset, pixel1, pixel2);
+						copyPixel(targetPix, offset, pixel1, pixel2);
 						mismatchCount++;
 					}
 					return;
 				}
 
 				if( isRGBSimilar(pixel1, pixel2) ){
-					copyPixel(targetPix, offset, pixel1, pixel2);
+					errorPixel(targetPix, offset, pixel2, pixel1);
 
 				} else if( ignoreAntialiasing && (
 						addBrightnessInfo(pixel1), // jit pixel info augmentation looks a little weird, sorry.
@@ -391,13 +391,13 @@ URL: https://github.com/Huddle/Resemble.js
 					)){
 
 					if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-						copyGrayScalePixel(targetPix, offset, pixel2);
+						errorPixel(targetPix, offset, pixel2);
 					} else {
-						errorPixel(targetPix, offset, pixel1, pixel2);
+						copyPixel(targetPix, offset, pixel2, pixel1);
 						mismatchCount++;
 					}
 				} else {
-					errorPixel(targetPix, offset, pixel1, pixel2);
+					copyPixel(targetPix, offset, pixel2, pixel1);
 					mismatchCount++;
 				}
 
@@ -501,6 +501,22 @@ URL: https://github.com/Huddle/Resemble.js
 			}
 
 			var self = {
+				manual: function(opts, val) {
+					if(typeof opts === 'string') {
+						tolerance[opts] = val;
+					} else {
+						tolerance.red = opts.red;
+						tolerance.green = opts.green;
+						tolerance.blue = opts.blue;
+						tolerance.alpha = opts.alpha;
+						tolerance.minBrightness = opts.minBrightness;
+						tolerance.maxBrightness = opts.maxBrightness;
+						ignoreAntialiasing = opts.ignoreAntialiasing;
+						ignoreColors = opts.ignoreColors;
+					}
+					if(hasMethod) { param(); }
+					return self;
+				},
 				ignoreNothing: function(){
 
 					tolerance.red = 16;
@@ -591,7 +607,7 @@ URL: https://github.com/Huddle/Resemble.js
 		if(options.errorType && errorPixelTransform[options.errorType] ){
 			errorPixelTransformer = errorPixelTransform[options.errorType];
 		}
-		
+
 		pixelTransparency = options.transparency || pixelTransparency;
 
 		return this;

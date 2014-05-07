@@ -95,6 +95,33 @@ $(function(){
 		}
 	});
 
+	$('.range').change(function(e) {
+		var $el = $(this);
+		var key = $el.data('type');
+		var val = parseInt($el.val(),10);
+		resembleControl.manual(key, val);
+	});
+
+	$('#white').click(function(e) {
+		resemble.outputSettings({
+			errorColor: {
+				red: 255,
+				green: 255,
+				blue: 255
+			}
+		});
+		resembleControl.manual({
+			red: 32,
+			green: 32,
+			blue: 32,
+			alpha: 32,
+			minBrightness: 64,
+			maxBrightness: 96,
+			ignoreAntialiasing: false,
+			ignoreColors: false
+		});
+	});
+
 	var buttons = $('.buttons button');
 
 	buttons.click(function(){
@@ -172,14 +199,14 @@ $(function(){
 		var done = $.Deferred();
 		var dtwo = $.Deferred();
 
-		xhr.open('GET', 'demoassets/People.jpg', true);
+		xhr.open('GET', 'demoassets/image1.jpg', true);
 		xhr.responseType = 'blob';
 		xhr.onload = function(e) {
 			done.resolve(this.response);
 		};
 		xhr.send();
 
-		xhr2.open('GET', 'demoassets/People2.jpg', true);
+		xhr2.open('GET', 'demoassets/image2.jpg', true);
 		xhr2.responseType = 'blob';
 		xhr2.onload = function(e) {
 			dtwo.resolve(this.response);
@@ -188,12 +215,12 @@ $(function(){
 
 		$('#example-images').click(function(){
 
-			$('#dropzone1').html('<img src="demoassets/People.jpg"/>');
-			$('#dropzone2').html('<img src="demoassets/People2.jpg"/>');
+			$('#dropzone1').html('<img src="demoassets/image1.jpg"/>');
+			$('#dropzone2').html('<img src="demoassets/image2.jpg"/>');
 
 			$.when(done, dtwo).done(function(file, file1){
 				if (typeof FileReader === 'undefined') {
-					resembleControl = resemble('demoassets/People.jpg').compareTo('demoassets/People2.jpg').onComplete(onComplete);
+					resembleControl = resemble('demoassets/image1.jpg').compareTo('demoassets/image2.jpg').onComplete(onComplete);
 				} else {
 					resembleControl = resemble(file).compareTo(file1).onComplete(onComplete);
 				}
